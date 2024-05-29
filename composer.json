@@ -1,0 +1,19 @@
+{
+    "name": "ghosty/container",
+    "description": "Simple small dependency injection container",
+    "type": "package",
+    "keywords": ["DI", "Container", "Dependency Injection"],
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Ghosty\\Container\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "AnvilM",
+            "email": "211anvil112@gmail.com"
+        }
+    ],
+    "require": {}
+}

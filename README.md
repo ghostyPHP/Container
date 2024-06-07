@@ -49,7 +49,7 @@ Resolve the binding from the container.
 ```php
 use Ghosty\Container\Container;
 
-Container::getInstance()->make(Test::class);
+Container::getInstance()->make(TestContract::class);
 ```
 
 ### Has
@@ -60,4 +60,24 @@ Container::getInstance()->make(Test::class);
 use Ghosty\Container\Container;
 
 Container::getInstance()->has(TestContract::class);
+```
+
+## Facades
+
+You can also use facades. For example:
+
+```php
+use Ghosty\Container\Facades\Container;
+
+Container::bind(TestContract::class, Test::class);
+
+```
+
+or
+
+```php
+use Ghosty\Container\Facades\Container;
+
+Container::make(TestContract::class);
+
 ```

@@ -13,7 +13,7 @@ final class Container extends Singleton implements ContainerContract
 
 
 
-    public function bind(string $id, string $concrete, bool $singleton = false): void
+    public function bind(string $id, string|object $concrete, bool $singleton = false): void
     {
         $singleton ? $this->singletons[$id] = $concrete : $this->bindings[$id] = $concrete;
     }

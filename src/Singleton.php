@@ -4,7 +4,7 @@ namespace Ghosty\Container;
 
 use Ghosty\Container\Contracts\SingletonContract;
 
-abstract class Singleton implements SingletonContract
+abstract class Singleton
 {
     private static $instance;
 
@@ -22,7 +22,7 @@ abstract class Singleton implements SingletonContract
 
 
 
-    private function __construct()
+    protected function __construct()
     {
     }
 

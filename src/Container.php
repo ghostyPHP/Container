@@ -2,119 +2,106 @@
 
 namespace Ghosty\Container;
 
+use Exception;
+use Ghosty\Container\Bags\BindingBag;
+use Ghosty\Container\Contracts\BindingContract;
 use Ghosty\Container\Contracts\ContainerContract;
+use Ghosty\Container\Exceptions\BindingNotFoundException;
 
-final class Container extends Singleton implements ContainerContract
+class Container extends Singleton implements ContainerContract
 {
-    private array $bindings = [];
+    private BindingBag $BindingBag;
 
-
-    private array $singletons = [];
-
-
-
-    public function bind(string $id, string|object $concrete, bool $singleton = false): void
+    protected function __construct()
     {
-        $singleton ? $this->singletons[$id] = $concrete : $this->bindings[$id] = $concrete;
+        $this->BindingBag = new BindingBag([]);
     }
 
-
-
-    public function singleton(string $id, string $concrete): void
+    public function bind(string $id, Binding $binding): void
     {
-        $this->bind($id, $concrete, true);
+        $this->BindingBag->add($id, $binding);
     }
 
-
-
-    public function make(string $id): mixed
+    public function make($abstract)
     {
-        if ($this->isSingleton($id) && is_object($this->singletons[$id]))
-        {
-            return $this->singletons[$id];
+        return $this->handle($abstract);
+    }
+
+    private function handle(string $abstract)
+    {
+        if (!$this->has($abstract)) {
+            return $this->resolve($abstract);
         }
 
-        return $this->resolveBinding($id);
+        if ($this->get($abstract)->isSingleton() && is_object($this->get($abstract)->getImplementation())) {
+            return $this->get($abstract)->getImplementation();
+        }
+
+        return $this->resolveBinding($this->get($abstract));
     }
 
-
-
-    public function has($id): bool
+    private function resolve($abstract)
     {
-        return $this->isSingleton($id) ? true : array_key_exists($id, $this->bindings);
+        if (!class_exists($abstract)) {
+            throw new BindingNotFoundException($abstract);
+        }
+
+        $this->bind($abstract, new Binding($abstract));
+
+        return $this->resolveBinding($this->get($abstract));
     }
 
-
-
-    private function resolveBinding(string $id)
+    private function resolveBinding(BindingContract $binding)
     {
+        $concrete = $binding->getConcrete();
 
-        $class = $this->getResolveClass($id);
+        $classReflector = new \ReflectionClass($concrete);
 
-        $classReflector = new \ReflectionClass($class);
-
-
-        $constructReflector = $classReflector->getConstructor();
-        if (empty($constructReflector))
-        {
-            if ($this->isSingleton($id))
-            {
-                $this->singletons[$id] = new $class;
-                return $this->singletons[$id];
+        if (empty($classReflector->getConstructor())) {
+            if ($binding->isSingleton()) {
+                return $binding->setImplementation(new $concrete)->getImplementation();
             }
-
-            return new $class;
+            return new ($binding->getConcrete());
         }
 
 
-        $constructArguments = $constructReflector->getParameters();
-        if (empty($constructArguments))
-        {
-            if ($this->isSingleton($id))
-            {
-                $this->singletons[$id] = new $class;
-                return $this->singletons[$id];
+        if (empty($classReflector->getConstructor()->getParameters())) {
+            if ($binding->isSingleton()) {
+                return $binding->setImplementation(new $concrete)->getImplementation();
             }
 
-            return new $class;
+            return new ($binding->getConcrete());
         }
 
 
         $args = [];
-        foreach ($constructArguments as $argument)
-        {
-
+        foreach ($classReflector->getConstructor()->getParameters() as $argument) {
             $argumentType = $argument->getType()->getName();
-
-
-            $args[$argument->getName()] = $this->make($argumentType);
+            if (array_key_exists($argument->getName(), $binding->getArgs())) {
+                $args[$argument->getName()] = $binding->getArgs()[$argument->getName()];
+            } else {
+                $args[$argument->getName()] = $this->make($argumentType);
+            }
         }
 
-        if ($this->isSingleton($id))
-        {
-            $this->singletons[$id] = new $this->singletons[$id](...$args);
-            return $this->singletons[$id];
+        if ($binding->isSingleton()) {
+            return $binding->setImplementation(new $concrete(...$args))->getImplementation();
         }
 
-        return new $class(...$args);
+        return new $concrete(...$args);
     }
 
-
-
-    private function getResolveClass(string $id)
+    private function has($abstract): bool
     {
-        if ($this->has($id))
-        {
-            return $this->isSingleton($id) ? $this->singletons[$id] : $this->bindings[$id];
-        }
-
-        return $id;
+        return $this->BindingBag->has($abstract);
     }
 
-
-
-    private function isSingleton($id)
+    private function get($abstract): BindingContract
     {
-        return array_key_exists($id, $this->singletons);
+        try {
+            return $this->BindingBag->get($abstract);
+        } catch (Exception $e) {
+            throw new BindingNotFoundException($abstract);
+        }
     }
 }

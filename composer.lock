@@ -1,0 +1,55 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "2f8b034c9ec901b0ceeb3584842f24f4",
+    "packages": [
+        {
+            "name": "ghosty/bag",
+            "version": "v1.0.9",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ghostyPHP/Bag.git",
+                "reference": "efa8be666e368d88657ca90f71fc95ab6f4c6dd0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ghostyPHP/Bag/zipball/efa8be666e368d88657ca90f71fc95ab6f4c6dd0",
+                "reference": "efa8be666e368d88657ca90f71fc95ab6f4c6dd0",
+                "shasum": ""
+            },
+            "type": "package",
+            "autoload": {
+                "psr-4": {
+                    "Ghosty\\Component\\Bag\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "AnvilM",
+                    "email": "211anvil112@gmail.com"
+                }
+            ],
+            "support": {
+                "issues": "https://github.com/ghostyPHP/Bag/issues",
+                "source": "https://github.com/ghostyPHP/Bag/tree/v1.0.9"
+            },
+            "time": "2024-07-02T21:39:18+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": [],
+    "plugin-api-version": "2.6.0"
+}

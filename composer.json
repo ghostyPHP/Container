@@ -15,5 +15,7 @@
             "email": "211anvil112@gmail.com"
         }
     ],
-    "require": {}
+    "require": {
+        "ghosty/bag": "^1.0"
+    }
 }

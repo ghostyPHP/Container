@@ -16,6 +16,6 @@
         }
     ],
     "require": {
-        "ghosty/bag": "^1.0"
+        "ghosty/bag": "^1.1"
     }
 }

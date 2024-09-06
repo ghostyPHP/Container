@@ -3,8 +3,9 @@
 namespace Ghosty\Container\Exceptions;
 
 use Exception;
+use Psr\Container\NotFoundExceptionInterface;
 
-class BindingNotFoundException extends Exception
+class BindingNotFoundException extends Exception implements NotFoundExceptionInterface
 {
     public function __construct(string $abstract)
     {

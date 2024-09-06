@@ -27,17 +27,22 @@ class Container extends Singleton implements ContainerContract
         return $this->handle($abstract);
     }
 
+    public function get($abstract)
+    {
+        return $this->make($abstract);
+    }
+
     private function handle(string $abstract)
     {
         if (!$this->has($abstract)) {
             return $this->resolve($abstract);
         }
 
-        if ($this->get($abstract)->isSingleton() && is_object($this->get($abstract)->getImplementation())) {
-            return $this->get($abstract)->getImplementation();
+        if ($this->getBinding($abstract)->isSingleton() && is_object($this->getBinding($abstract)->getImplementation())) {
+            return $this->getBinding($abstract)->getImplementation();
         }
 
-        return $this->resolveBinding($this->get($abstract));
+        return $this->resolveBinding($this->getBinding($abstract));
     }
 
     private function resolve($abstract)
@@ -48,7 +53,7 @@ class Container extends Singleton implements ContainerContract
 
         $this->bind($abstract, new Binding($abstract));
 
-        return $this->resolveBinding($this->get($abstract));
+        return $this->resolveBinding($this->getBinding($abstract));
     }
 
     private function resolveBinding(BindingContract $binding)
@@ -91,12 +96,12 @@ class Container extends Singleton implements ContainerContract
         return new $concrete(...$args);
     }
 
-    private function has($abstract): bool
+    public function has($abstract): bool
     {
         return $this->BindingBag->has($abstract);
     }
 
-    private function get($abstract): BindingContract
+    private function getBinding($abstract): BindingContract
     {
         try {
             return $this->BindingBag->get($abstract);

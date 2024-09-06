@@ -3,8 +3,9 @@
 namespace Ghosty\Container\Contracts;
 
 use Ghosty\Container\Binding;
+use Psr\Container\ContainerInterface;
 
-interface ContainerContract
+interface ContainerContract extends ContainerInterface
 {
     public function bind(string $abstract, Binding $binding): void;
 

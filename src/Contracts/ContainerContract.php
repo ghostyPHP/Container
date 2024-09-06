@@ -9,5 +9,5 @@ interface ContainerContract extends ContainerInterface
 {
     public function bind(string $abstract, Binding $binding): void;
 
-    public function make($abstract);
+    public function make($abstract, array $args = []);
 }

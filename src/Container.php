@@ -3,6 +3,7 @@
 namespace Ghosty\Container;
 
 use Exception;
+use Ghosty\Component\Bag\Exceptions\EntryNotFoundException;
 use Ghosty\Container\Bags\BindingBag;
 use Ghosty\Container\Contracts\BindingContract;
 use Ghosty\Container\Contracts\ContainerContract;
@@ -22,9 +23,9 @@ class Container extends Singleton implements ContainerContract
         $this->BindingBag->add($id, $binding);
     }
 
-    public function make($abstract)
+    public function make($abstract, array $parameters = [])
     {
-        return $this->handle($abstract);
+        return $this->handle($abstract, $parameters);
     }
 
     public function get($abstract)
@@ -32,28 +33,20 @@ class Container extends Singleton implements ContainerContract
         return $this->make($abstract);
     }
 
-    private function handle(string $abstract)
+    private function handle(string $abstract, array $parameters = [])
     {
         if (!$this->has($abstract)) {
-            return $this->resolve($abstract);
+            if (!class_exists($abstract)) {
+                throw new BindingNotFoundException($abstract);
+            }
+            $this->bind($abstract, new Binding($abstract));
         }
 
         if ($this->getBinding($abstract)->isSingleton() && is_object($this->getBinding($abstract)->getImplementation())) {
             return $this->getBinding($abstract)->getImplementation();
         }
 
-        return $this->resolveBinding($this->getBinding($abstract));
-    }
-
-    private function resolve($abstract)
-    {
-        if (!class_exists($abstract)) {
-            throw new BindingNotFoundException($abstract);
-        }
-
-        $this->bind($abstract, new Binding($abstract));
-
-        return $this->resolveBinding($this->getBinding($abstract));
+        return $this->resolveBinding($this->getBinding($abstract)->withArgs($parameters));
     }
 
     private function resolveBinding(BindingContract $binding)
@@ -78,14 +71,15 @@ class Container extends Singleton implements ContainerContract
             return new ($binding->getConcrete());
         }
 
-
         $args = [];
         foreach ($classReflector->getConstructor()->getParameters() as $argument) {
-            $argumentType = $argument->getType()->getName();
             if (array_key_exists($argument->getName(), $binding->getArgs())) {
                 $args[$argument->getName()] = $binding->getArgs()[$argument->getName()];
             } else {
-                $args[$argument->getName()] = $this->make($argumentType);
+                if (!$argument->hasType()) {
+                    throw new EntryNotFoundException($argument->getName());
+                }
+                $args[$argument->getName()] = $this->make($argument->getType()->getName());
             }
         }
 

@@ -21,7 +21,7 @@ class Binding implements BindingContract
 
     public function withArgs(array $args): BindingContract
     {
-        $this->args = $args;
+        $this->args = array_merge($this->args, $args);
         return $this;
     }
 

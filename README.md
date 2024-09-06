@@ -6,7 +6,7 @@
 Ghosty Container is a small lightweight ServiceContainer that allows you to use DI in your projects.
 
 ## Learning
-[Documentation](https://ghostyphp.github.io/docs/Components/Container.html) for Ghosty Router Component can be found on the Ghosty [website](https://ghostyphp.github.io/docs/Components/Container.html).
+[Documentation](https://ghostyphp.github.io/docs/Components/Container.html) for Ghosty Container Component can be found on the Ghosty [website](https://ghostyphp.github.io/docs/Components/Container.html).
 
 
 ## License
